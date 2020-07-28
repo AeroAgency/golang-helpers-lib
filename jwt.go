@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"os"
@@ -19,4 +20,16 @@ func (j Jwt) VerifyToken(tokenString string) (*jwt.Token, error) {
 		return nil, err
 	}
 	return token, nil
+}
+
+func(j *Jwt) ParseUnverified(tokenString string) (jwt.MapClaims, error){
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok != true {
+		return nil, errors.New("Ошибка получения данных из jwt токена")
+	}
+	return claims, nil
 }
