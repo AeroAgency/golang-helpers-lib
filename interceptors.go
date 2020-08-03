@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func GrpcServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func GrpcServerUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	start := time.Now()
 	md, _ := metadata.FromIncomingContext(ctx)
 	var xRequestId string
