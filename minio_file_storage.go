@@ -63,3 +63,8 @@ func (f *FileStorage) RemoveFile(folderName string, filename string) error {
 	err := f.client.RemoveObject(folderName, filename)
 	return err
 }
+
+func (f *FileStorage) RemoveBucket(bucketName string) error {
+	err := f.client.RemoveBucket(bucketName)
+	return err
+}
