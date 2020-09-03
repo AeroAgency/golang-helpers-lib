@@ -18,8 +18,8 @@ func (validator Validator) AddCustomRule(name string, fn func(field string, rule
 }
 
 func (validator Validator) addUniversalMaxStringValidationRule() {
-	validator.AddCustomRule("string_len", func(field string, rule string, message string, value interface{}) error {
-		mustLen := strings.TrimPrefix(rule, "max:")
+	validator.AddCustomRule("max_string", func(field string, rule string, message string, value interface{}) error {
+		mustLen := strings.TrimPrefix(rule, "max_string:")
 		maxLen, err := strconv.Atoi(mustLen)
 		if err != nil {
 			panic(errors.New("govalidator: unable to parse string to integer"))
