@@ -34,12 +34,12 @@ func (validator Validator) addUniversalMaxStringValidationRule() {
 
 // Валидация объекта
 func (validator Validator) ValidateProto(inputStruct interface{}, rules map[string][]string) error {
-	validator.addUniversalMaxStringValidationRule()
 	opts := govalidator.Options{
 		Data:  inputStruct,
 		Rules: rules,
 	}
 	v := govalidator.New(opts)
+	validator.addUniversalMaxStringValidationRule()
 	e := v.ValidateStruct()
 	if len(e) > 0 {
 		errorsData, _ := json.MarshalIndent(e, "", "  ")
