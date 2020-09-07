@@ -25,3 +25,9 @@ func CalcOrigBinaryLength(fileBase64String string) int {
 	}
 	return (l*3 - eq) / 4
 }
+
+// Возвращает uuid из переданной строки
+func GetUuidByString(input string) uuid.UUID {
+	uuid, _ := uuid.FromString(input)
+	return uuid
+}
