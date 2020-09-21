@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/base64"
 	"strconv"
 	"strings"
 )
@@ -67,7 +68,8 @@ func (f *FileChecker) IsValidExt(ext string) bool {
 // Возвращает признак корректности размера файла
 func (f *FileChecker) IsValidSize(fileBase64String string) bool {
 	if fileSizeRule, ok := f.rules["file_size"]; ok {
-		fileSize := CalcOrigBinaryLength(fileBase64String)
+		fileBase64DecodeString, _ := base64.StdEncoding.DecodeString(fileBase64String[strings.IndexByte(fileBase64String, ',')+1:])
+		fileSize := len(fileBase64DecodeString)
 		maxFileSize, _ := strconv.Atoi(fileSizeRule)
 		if fileSize > maxFileSize {
 			return false
