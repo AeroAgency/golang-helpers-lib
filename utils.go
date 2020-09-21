@@ -1,5 +1,9 @@
 package helpers
 
+import (
+	uuid "github.com/satori/go.uuid"
+)
+
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -24,4 +28,10 @@ func CalcOrigBinaryLength(fileBase64String string) int {
 		l -= eq
 	}
 	return (l*3 - eq) / 4
+}
+
+// Возвращает uuid из переданной строки
+func GetUuidByString(input string) uuid.UUID {
+	uuid, _ := uuid.FromString(input)
+	return uuid
 }
