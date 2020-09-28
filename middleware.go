@@ -10,7 +10,7 @@ import (
 type Middleware struct {}
 
 // Установка заголовков для CORS-запросов
-func(m *Middleware) setCorsHeaders(w http.ResponseWriter, r *http.Request) {
+func(m *Middleware) SetCorsHeaders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With,content-type,Access-Token")
