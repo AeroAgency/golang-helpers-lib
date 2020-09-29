@@ -4,7 +4,7 @@ import "net/http"
 
 type LoggingResponseWriter struct {
 	http.ResponseWriter
-	statusCode int
+	StatusCode int
 }
 
 func NewLoggingResponseWriter(w http.ResponseWriter) *LoggingResponseWriter {
@@ -12,6 +12,6 @@ func NewLoggingResponseWriter(w http.ResponseWriter) *LoggingResponseWriter {
 }
 
 func (lrw *LoggingResponseWriter) WriteHeader(code int) {
-	lrw.statusCode = code
+	lrw.StatusCode = code
 	lrw.ResponseWriter.WriteHeader(code)
 }
