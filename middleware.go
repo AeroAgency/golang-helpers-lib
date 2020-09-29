@@ -47,7 +47,6 @@ func (m *Middleware) CustomMatcher(key string) (string, bool) {
 
 func (m *Middleware) MiddlewaresHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		metrics := NewPrometheusMetrics()
 		startTime := time.Now().Nanosecond()
 
 		xReqId := r.Header.Get("X-Request-Id")
@@ -65,7 +64,7 @@ func (m *Middleware) MiddlewaresHandler(h http.Handler) http.Handler {
 		m.SetCorsHeaders(w, r)
 		lrw := NewLoggingResponseWriter(w)
 		h.ServeHTTP(lrw, r)
-		metrics.IncRequestCount(r, lrw)
-		metrics.SetRequestDuration(r, lrw, startTime)
+		IncRequestCount(r, lrw)
+		SetRequestDuration(r, lrw, startTime)
 	})
 }
