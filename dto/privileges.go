@@ -1,6 +1,7 @@
 package dto
 
 type Privileges struct {
+	IsAuthorized bool `json:"isAuthorized"`
 	UserId   string   `json:"userId"`
 	Pages    Pages    `json:"pages"`
 	Entities Entities `json:"entities"`
