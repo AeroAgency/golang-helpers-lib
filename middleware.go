@@ -2,10 +2,13 @@ package helpers
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/runtime/protoiface"
 	"net/http"
 	"strings"
@@ -122,4 +125,31 @@ func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 		}()
 		h.ServeHTTP(lrw, r)
 	})
+}
+
+// Кастомная функция для отображения ошибок, пришедших от микросервисов по gRPC
+func CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
+	const fallback = `{"error": "failed to marshal error message"}`
+	var errorsDataMessage string
+	type errorBody struct {
+		Err     string `json:"error"`
+		Message string `json:"message"`
+	}
+	w.Header().Set("Content-type", marshaler.ContentType())
+	w.WriteHeader(runtime.HTTPStatusFromCode(status.Code(err)))
+
+	st := status.Convert(err)
+	for _, detail := range st.Details() {
+		switch t := detail.(type) {
+		case *errdetails.ErrorInfo:
+			errorsDataMessage = t.Metadata["message"]
+		}
+	}
+	jErr := json.NewEncoder(w).Encode(errorBody{
+		Err:     status.Convert(err).Message(),
+		Message: errorsDataMessage,
+	})
+	if jErr != nil {
+		w.Write([]byte(fallback))
+	}
 }
