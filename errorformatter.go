@@ -14,7 +14,7 @@ type ErrSetting struct {
 }
 
 var ErrSettings = map[codes.Code]ErrSetting{
-	codes.FailedPrecondition: {"400 Bad Request", "Что-то пошло не так. Перезагрузите страницу и попробуйте еще раз."},
+	codes.FailedPrecondition: {"400 Bad Request", "Некорректный запрос, например, отсутствует один из обязательных параметров."},
 	codes.Unauthenticated:    {"401 Unauthorized", "Авторизуйтесь и попробуйте еще раз."},
 	codes.PermissionDenied:   {"403 Forbidden", "Доступ запрещен. У вас нет прав для совершения действия."},
 	codes.NotFound:           {"404 Not Found", "Страница не найдена. Вы ввели неверный адрес или такой страницы не существует."},
