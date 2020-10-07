@@ -128,7 +128,7 @@ func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 }
 
 // Кастомная функция для отображения ошибок, пришедших от микросервисов по gRPC
-func CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
+func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
 	const fallback = `{"error": "failed to marshal error message"}`
 	var errorsDataMessage string
 	type errorBody struct {
