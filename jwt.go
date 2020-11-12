@@ -9,12 +9,15 @@ import (
 
 type Jwt struct{}
 
-func (j Jwt) VerifyToken(tokenString string) (*jwt.Token, error) {
+func (j Jwt) VerifyToken(tokenString string, secret string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("ACCESS_SECRET")), nil
+		if secret == "" {
+			secret = os.Getenv("ACCESS_SECRET")
+		}
+		return []byte(secret), nil
 	})
 	if err != nil {
 		return nil, err
@@ -22,7 +25,7 @@ func (j Jwt) VerifyToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func(j *Jwt) ParseUnverified(tokenString string) (jwt.MapClaims, error){
+func (j *Jwt) ParseUnverified(tokenString string) (jwt.MapClaims, error) {
 	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
 	if err != nil {
 		return nil, err
