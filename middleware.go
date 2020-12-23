@@ -96,7 +96,7 @@ func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 		t1 := time.Now()
 		defer func() {
 			for _, v := range exceptions {
-				if !strings.HasPrefix(r.Header.Get(userAgent), v) {
+				if strings.HasPrefix(r.Header.Get(userAgent), v) {
 					exception = true
 				}
 			}
