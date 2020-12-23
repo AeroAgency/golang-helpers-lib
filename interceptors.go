@@ -27,7 +27,7 @@ func GrpcServerUnaryInterceptor(ctx context.Context, req interface{}, info *grpc
 		}
 	}
 	for _, v := range exceptions {
-		if !strings.HasPrefix(httpRequestUserAgent, v) {
+		if strings.HasPrefix(httpRequestUserAgent, v) {
 			exception = true
 		}
 	}
