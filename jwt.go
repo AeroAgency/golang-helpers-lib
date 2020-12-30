@@ -26,6 +26,9 @@ func (j Jwt) VerifyTokenHMAC(tokenString string, secret string) (*jwt.Token, err
 }
 
 func (j Jwt) VerifyTokenRSA(tokenString string, publicKey string) (*jwt.Token, error) {
+	if publicKey == "" {
+		return nil, errors.New("public key must not be empty")
+	}
 	rsaPublicKey, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKey))
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
