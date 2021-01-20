@@ -56,3 +56,19 @@ func (validator Validator) ValidateProto(inputStruct interface{}, rules map[stri
 	}
 	return nil
 }
+
+// Валидация объекта c возможностью передачи настраиваимых сообщений
+func (validator Validator) ValidateProtoWithCustomMessages(inputStruct interface{}, rules map[string][]string, messages map[string][]string) error {
+	opts := govalidator.Options{
+		Data:     inputStruct,
+		Rules:    rules,
+		Messages: messages,
+	}
+	v := govalidator.New(opts)
+	e := v.ValidateStruct()
+	if len(e) > 0 {
+		errorsData, _ := json.MarshalIndent(e, "", "  ")
+		return errors.New(string(errorsData))
+	}
+	return nil
+}
