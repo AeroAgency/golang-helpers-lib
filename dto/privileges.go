@@ -1,10 +1,10 @@
 package dto
 
 type Privileges struct {
-	IsAuthorized bool `json:"isAuthorized"`
-	UserId   string   `json:"userId"`
-	Pages    Pages    `json:"pages"`
-	Entities Entities `json:"entities"`
+	IsAuthorized bool     `json:"isAuthorized"`
+	UserId       string   `json:"userId"`
+	Pages        Pages    `json:"pages"`
+	Entities     Entities `json:"entities"`
 }
 
 type Pages struct {
@@ -15,9 +15,10 @@ type Pages struct {
 }
 
 type Entities struct {
-	News      []string `json:"news"`
-	Promo     []string `json:"promo"`
-	Documents []string `json:"documents"`
-	Reports   []string `json:"reports"`
-	Requests   []string `json:"requests"`
+	News         []string `json:"news"`
+	Promo        []string `json:"promo"`
+	Documents    []string `json:"documents"`
+	Calculations []string `json:"calculations"`
+	Reports      []string `json:"reports"`
+	Requests     []string `json:"requests"`
 }
