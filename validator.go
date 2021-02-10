@@ -20,7 +20,6 @@ func init() {
 			panic(errors.New("govalidator: unable to parse string to integer"))
 		}
 		val := []rune(value.(string))
-		fmt.Println(maxLen)
 		if len(val) > maxLen {
 			return fmt.Errorf("The %s field must be maximum %d char", field, maxLen)
 		}
