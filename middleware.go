@@ -112,7 +112,7 @@ func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 							"Server":         r.Header.Get("Server"),
 							"Via":            r.Header.Get("Via"),
 							"Accept":         r.Header.Get("Accept"),
-							"pstxid":         r.Header.Get("pstxid"),
+							"pstxid":         r.Header.Get("X-Request-Id"),
 							"x-ps-sso-token": r.Header.Get("Access-Token"),
 						},
 					}),
