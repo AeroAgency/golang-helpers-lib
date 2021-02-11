@@ -147,6 +147,10 @@ func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, m
 			errorsDataMessage = t.Metadata["message"]
 		}
 	}
+	if errorsDataMessage == "" {
+		errorSettingForCode := ErrSettings[status.Code(err)]
+		errorsDataMessage = errorSettingForCode.Message
+	}
 	jErr := json.NewEncoder(w).Encode(errorBody{
 		Err:     status.Convert(err).Message(),
 		Message: errorsDataMessage,
