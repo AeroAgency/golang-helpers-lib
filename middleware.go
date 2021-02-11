@@ -18,6 +18,8 @@ import (
 // userAgent - duplicate string in code
 const userAgent = "User-Agent"
 
+const defaultErrorMessage = "Сервер не смог обработать ваш запрос. Проверьте корректность типов входных параметров"
+
 type Middleware struct{}
 
 // Установка заголовков для CORS-запросов
@@ -148,8 +150,7 @@ func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, m
 		}
 	}
 	if errorsDataMessage == "" {
-		errorSettingForCode := ErrSettings[status.Code(err)]
-		errorsDataMessage = errorSettingForCode.Message
+		errorsDataMessage = defaultErrorMessage
 	}
 	jErr := json.NewEncoder(w).Encode(errorBody{
 		Err:     status.Convert(err).Message(),
