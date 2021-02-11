@@ -66,8 +66,9 @@ func (validator Validator) ValidateProtoWithCustomMessages(inputStruct interface
 	v := govalidator.New(opts)
 	e := v.ValidateStruct()
 	if len(e) > 0 {
-		errorsData, _ := json.MarshalIndent(e, "", "  ")
-		return errors.New(string(errorsData))
+		for k := range e {
+			return errors.New(e.Get(k))
+		}
 	}
 	return nil
 }
