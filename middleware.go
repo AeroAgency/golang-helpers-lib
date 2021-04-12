@@ -3,14 +3,21 @@ package helpers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/prometheus/common/log"
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/runtime/protoiface"
 	"net/http"
+	"net/http/httputil"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -159,4 +166,76 @@ func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, m
 	if jErr != nil {
 		w.Write([]byte(fallback))
 	}
+}
+
+// Логирует REST запросы к серверу
+func (m *Middleware) RestRequestLoggerMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		httpRequestUserAgent := "User-Agent"
+		var exception bool
+		exceptions := make([]string, 0, 2)
+		exceptions = append(exceptions, "kube-probe", "Prometheus")
+		restLogmode, err := strconv.Atoi(os.Getenv("REST_LOGMODE"))
+		if err == nil && restLogmode == 1 {
+			requestDump, err := httputil.DumpRequest(r, true)
+			for _, v := range exceptions {
+				if strings.HasPrefix(r.Header.Get(httpRequestUserAgent), v) {
+					exception = true
+				}
+			}
+			if err == nil && exception != true {
+				log.Info("REST REQUEST")
+				fmt.Print(string(requestDump))
+
+			}
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+// Middleware для вывода тела ответа
+func RestResponseLoggerInterceptor(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	var httpRequestUserAgent string
+	var exception bool
+	exceptions := make([]string, 0, 2)
+	exceptions = append(exceptions, "kube-probe", "Prometheus")
+	for i, v := range md {
+		if i == "grpcgateway-user-agent" {
+			httpRequestUserAgent = v[0]
+		}
+	}
+	for _, v := range exceptions {
+		if strings.HasPrefix(httpRequestUserAgent, v) {
+			exception = true
+		}
+	}
+	// Calls the handler
+	h, err := handler(ctx, req)
+	if exception != true {
+		log.Info(fmt.Sprintf("REST RESPONSE CODE %d", runtime.HTTPStatusFromCode(status.Code(err))))
+		log.Info("REST RESPONSE BODY")
+		if err == nil {
+			b, _ := json.MarshalIndent(h, "", "    ")
+			log.Info(string(b))
+		} else {
+			st := status.Convert(err)
+			for _, detail := range st.Details() {
+				switch t := detail.(type) {
+				case *errdetails.ErrorInfo:
+					type errorBody struct {
+						Err     string `json:"error"`
+						Message string `json:"message"`
+					}
+					errorData := errorBody{
+						Err:     st.Message(),
+						Message: t.Metadata["message"],
+					}
+					b, _ := json.MarshalIndent(errorData, "", "    ")
+					fmt.Println(string(b))
+				}
+			}
+		}
+	}
+	return h, err
 }
