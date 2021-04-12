@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-// Middleware для вывода тела ответа
+// Middleware для вывода тела ответа REST
 func RestResponseLoggerInterceptor(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	restLogMode, _ := strconv.Atoi(os.Getenv("REST_LOGMODE"))
 	if restLogMode != 1 {
@@ -66,6 +66,7 @@ func RestResponseLoggerInterceptor(ctx context.Context, req interface{}, _ *grpc
 	return h, err
 }
 
+// Middleware для вывода тела ответа GRPC
 func GrpcServerUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	logMode, _ := strconv.Atoi(os.Getenv("GRPC_LOGMODE"))
 	if logMode != 1 {
