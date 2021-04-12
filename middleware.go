@@ -49,6 +49,13 @@ func (m *Middleware) HttpResponseModifier(ctx context.Context, w http.ResponseWr
 	return nil
 }
 
+// Возвращает исключения для логирования по User-Agent (перечисленные запросы не логируем)
+func getLogExceptions() []string {
+	exceptions := make([]string, 0, 2)
+	exceptions = append(exceptions, "kube-probe", "Prometheus")
+	return exceptions
+}
+
 // Мэппинг для заголовков
 func (m *Middleware) CustomMatcher(key string) (string, bool) {
 	switch key {
@@ -90,8 +97,7 @@ func (m *Middleware) MiddlewaresHandler(h http.Handler) http.Handler {
 // Logger -
 func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		exceptions := make([]string, 0, 2)
-		exceptions = append(exceptions, "kube-probe", "Prometheus")
+		exceptions := getLogExceptions()
 		var exception bool
 		lrw := NewLoggingResponseWriter(w)
 		config := zap.NewProductionConfig()
@@ -173,8 +179,7 @@ func (m *Middleware) RestRequestLoggerMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		httpRequestUserAgent := "User-Agent"
 		var exception bool
-		exceptions := make([]string, 0, 2)
-		exceptions = append(exceptions, "kube-probe", "Prometheus")
+		exceptions := getLogExceptions()
 		restLogmode, err := strconv.Atoi(os.Getenv("REST_LOGMODE"))
 		if err == nil && restLogmode == 1 {
 			requestDump, err := httputil.DumpRequest(r, true)
@@ -198,8 +203,7 @@ func RestResponseLoggerInterceptor(ctx context.Context, req interface{}, _ *grpc
 	md, _ := metadata.FromIncomingContext(ctx)
 	var httpRequestUserAgent string
 	var exception bool
-	exceptions := make([]string, 0, 2)
-	exceptions = append(exceptions, "kube-probe", "Prometheus")
+	exceptions := getLogExceptions()
 	for i, v := range md {
 		if i == "grpcgateway-user-agent" {
 			httpRequestUserAgent = v[0]
@@ -217,7 +221,7 @@ func RestResponseLoggerInterceptor(ctx context.Context, req interface{}, _ *grpc
 		log.Info("REST RESPONSE BODY")
 		if err == nil {
 			b, _ := json.MarshalIndent(h, "", "    ")
-			log.Info(string(b))
+			fmt.Println(string(b))
 		} else {
 			st := status.Convert(err)
 			for _, detail := range st.Details() {
