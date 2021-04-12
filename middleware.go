@@ -10,8 +10,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/runtime/protoiface"
 	"net/http"
@@ -196,50 +194,4 @@ func (m *Middleware) RestRequestLoggerMiddleware(h http.Handler) http.Handler {
 		}
 		h.ServeHTTP(w, r)
 	})
-}
-
-// Middleware для вывода тела ответа
-func RestResponseLoggerInterceptor(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	var httpRequestUserAgent string
-	var exception bool
-	exceptions := getLogExceptions()
-	for i, v := range md {
-		if i == "grpcgateway-user-agent" {
-			httpRequestUserAgent = v[0]
-		}
-	}
-	for _, v := range exceptions {
-		if strings.HasPrefix(httpRequestUserAgent, v) {
-			exception = true
-		}
-	}
-	// Calls the handler
-	h, err := handler(ctx, req)
-	if exception != true {
-		log.Info(fmt.Sprintf("REST RESPONSE CODE %d", runtime.HTTPStatusFromCode(status.Code(err))))
-		log.Info("REST RESPONSE BODY")
-		if err == nil {
-			b, _ := json.MarshalIndent(h, "", "    ")
-			fmt.Println(string(b))
-		} else {
-			st := status.Convert(err)
-			for _, detail := range st.Details() {
-				switch t := detail.(type) {
-				case *errdetails.ErrorInfo:
-					type errorBody struct {
-						Err     string `json:"error"`
-						Message string `json:"message"`
-					}
-					errorData := errorBody{
-						Err:     st.Message(),
-						Message: t.Metadata["message"],
-					}
-					b, _ := json.MarshalIndent(errorData, "", "    ")
-					fmt.Println(string(b))
-				}
-			}
-		}
-	}
-	return h, err
 }
