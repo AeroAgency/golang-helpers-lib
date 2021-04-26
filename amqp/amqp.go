@@ -494,11 +494,11 @@ func (client *Client) reConsume() {
 }
 
 // NewConsumer возвращает экземпляр структуры Consumer и добавляет ее в список консьюмеров клиента
-func (client *Client) NewConsumer(handle handler) *Consumer {
+func (client *Client) NewConsumer(handle handler, tag string) *Consumer {
 	consumer := &Consumer{
 		handler:    handle,
 		client:     client,
-		tag:        "", // Когда tag пуст. Rabbit атоматом сгенирирует tag/
+		tag:        tag, // Когда tag пуст. Rabbit атоматом сгенирирует tag/
 		done:       make(chan error),
 		deadline:   time.Now().Add(DefaultConsumeIdleTimeout),
 		Timeout:    DefaultConsumeIdleTimeout,
