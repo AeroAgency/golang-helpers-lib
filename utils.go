@@ -2,6 +2,8 @@ package helpers
 
 import (
 	uuid "github.com/satori/go.uuid"
+	"strconv"
+	"time"
 )
 
 func StringInSlice(a string, list []string) bool {
@@ -34,4 +36,17 @@ func CalcOrigBinaryLength(fileBase64String string) int {
 func GetUuidByString(input string) uuid.UUID {
 	uuid, _ := uuid.FromString(input)
 	return uuid
+}
+
+// Возвращает timestamp для переданной даты в формате "dd.mm.yyyy"
+func GetDateTimeTs(date string) int64 {
+	layout := "02.01.2006"
+	t, _ := time.Parse(layout, date)
+	return t.Unix()
+}
+
+// Возвращает bool по строковому значению 1 / 0
+func GetBoolFromString(value string) bool {
+	intValue, _ := strconv.Atoi(value)
+	return intValue == 1
 }
