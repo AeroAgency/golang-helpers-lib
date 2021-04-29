@@ -148,6 +148,7 @@ func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, m
 	var errorsDataMessage string
 	type errorBody struct {
 		Err     string `json:"error"`
+		ErrCode string `json:"errorCode"`
 		Message string `json:"message"`
 	}
 	w.Header().Set("Content-type", marshaler.ContentType())
@@ -165,6 +166,7 @@ func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, m
 	}
 	jErr := json.NewEncoder(w).Encode(errorBody{
 		Err:     status.Convert(err).Message(),
+		ErrCode: "BackendApiError",
 		Message: errorsDataMessage,
 	})
 	if jErr != nil {
