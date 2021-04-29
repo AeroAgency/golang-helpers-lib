@@ -147,9 +147,10 @@ func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, m
 	const fallback = `{"error": "failed to marshal error message"}`
 	var errorsDataMessage string
 	type errorBody struct {
-		Err     string `json:"error"`
-		ErrCode string `json:"errorCode"`
-		Message string `json:"message"`
+		Err         string `json:"error"`
+		ErrCode     string `json:"errorCode"`
+		Message     string `json:"message"`
+		UserMessage string `json:"userMessage"`
 	}
 	w.Header().Set("Content-type", marshaler.ContentType())
 	w.WriteHeader(runtime.HTTPStatusFromCode(status.Code(err)))
@@ -165,9 +166,10 @@ func (m *Middleware) CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, m
 		errorsDataMessage = defaultErrorMessage
 	}
 	jErr := json.NewEncoder(w).Encode(errorBody{
-		Err:     status.Convert(err).Message(),
-		ErrCode: "BackendApiError",
-		Message: errorsDataMessage,
+		Err:         status.Convert(err).Message(),
+		ErrCode:     "BackendApiError",
+		Message:     errorsDataMessage,
+		UserMessage: errorsDataMessage,
 	})
 	if jErr != nil {
 		w.Write([]byte(fallback))
