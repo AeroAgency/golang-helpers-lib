@@ -45,6 +45,13 @@ func GetDateTimeTs(date string) int64 {
 	return t.Unix()
 }
 
+// Возвращает timestamp для переданной даты в формате "dd.mm.yyyy hh:mm:ss"
+func GetDateWithTimeTs(date string) int64 {
+	layout := "02.01.2006 15:04:05"
+	t, _ := time.Parse(layout, date)
+	return t.Unix()
+}
+
 // Возвращает bool по строковому значению 1 / 0
 func GetBoolFromString(value string) bool {
 	intValue, _ := strconv.Atoi(value)
