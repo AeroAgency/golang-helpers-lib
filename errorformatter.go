@@ -18,7 +18,7 @@ var ErrSettings = map[codes.Code]ErrSetting{
 	codes.Unauthenticated:    {"401 Unauthorized", "Авторизуйтесь и попробуйте еще раз."},
 	codes.PermissionDenied:   {"403 Forbidden", "Доступ запрещен. У вас нет прав для совершения действия."},
 	codes.NotFound:           {"404 Not Found", "Страница не найдена. Вы ввели неверный адрес или такой страницы не существует."},
-	codes.NotFound:           {"409 Conflict", "Запись уже существует."},
+	codes.AlreadyExists:      {"409 Conflict", "Запись уже существует."},
 	codes.Internal:           {"500 Internal Server Error", "Что-то пошло не так. Попробуйте еще раз позже."},
 	codes.Unavailable:        {"503 Service Unavailable", "Что-то пошло не так. Попробуйте еще раз позже."},
 	codes.DeadlineExceeded:   {"504 Gateway Timeout", "Что-то пошло не так. Перезагрузите страницу и попробуйте еще раз."},
