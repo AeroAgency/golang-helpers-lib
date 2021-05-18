@@ -111,6 +111,7 @@ func GrpcServerUnaryInterceptor(ctx context.Context, req interface{}, info *grpc
 		logger.WithFields(log.Fields{
 			"x-request-id": xRequestId,
 			"method":       info.FullMethod,
+			"error":        err,
 			"response":     h,
 			"time":         time.Since(start),
 		}).Info("Response")
