@@ -15,6 +15,15 @@ func StringInSlice(a string, list []string) bool {
 	return false
 }
 
+func SliceIndex(element string, data []string) int {
+	for k, v := range data {
+		if element == v {
+			return k
+		}
+	}
+	return -1 //not found.
+}
+
 // Возвращает размер файла в байтах
 func CalcOrigBinaryLength(fileBase64String string) int {
 	l := len(fileBase64String)
