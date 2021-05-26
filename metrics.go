@@ -17,10 +17,18 @@ var (
 		Name: "http_server_requests_seconds_sum",
 		Help: "Request duration, ms",
 	}, []string{"method", "uri", "status"})
-	CalculationsReportDownloads = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+	CalculationsDocumentDownloads = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "dealer_portal_download_prm_reports",
-		Help: "Current number",
-	}, []string{"result"})
+		Help: "Скачивание отчетов PRM.",
+	}, []string{"UserDownloadResult"}) // SUCCESS, FAILED
+	AuthSignIn = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "dealer_portal_authorizations",
+		Help: "Авторизация на портале.",
+	}, []string{"result"}) // 200 или 401
+	RequestsRequests = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "dealer_portal_requests_status",
+		Help: "Создание и возвращение заявки.",
+	}, []string{"UserDownloadResult"}) // DP_to_HPSM_OK, DP_to_HPSM_ERROR, HPSM_to_DP_OK, HPSM_to_DP_ERROR
 )
 
 // IncRequestCount
@@ -36,5 +44,15 @@ func SetRequestDuration(r *http.Request, lrw *LoggingResponseWriter, startTime i
 
 // IncCalculationsReportDownloads
 func IncCalculationsReportDownloads(result string) {
-	CalculationsReportDownloads.WithLabelValues(result).Observe(1)
+	CalculationsDocumentDownloads.WithLabelValues(result).Observe(1)
+}
+
+// IncAuthSignIn
+func IncAuthSignIn(result string) {
+	AuthSignIn.WithLabelValues(result).Observe(1)
+}
+
+// IncRequestsRequests
+func IncRequestsRequests(result string) {
+	RequestsRequests.WithLabelValues(result).Observe(1)
 }

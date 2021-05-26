@@ -36,14 +36,12 @@ func (d *Dispatcher) Register(listener Listener, names ...Name) error {
 }
 
 // отправка события
-func (d *Dispatcher) Dispatch(name Name, event interface{}) error {
+func (d *Dispatcher) Dispatch(name Name, event interface{}) {
 	if _, ok := d.events[name]; !ok {
-		return fmt.Errorf("the '%s' event is not registered", name)
+		panic(fmt.Sprintf("the '%s' event is not registered", name))
 	}
 
 	d.jobs <- job{eventName: name, eventType: event}
-
-	return nil
 }
 
 func (d *Dispatcher) consume() {
