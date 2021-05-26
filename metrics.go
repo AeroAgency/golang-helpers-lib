@@ -17,6 +17,10 @@ var (
 		Name: "http_server_requests_seconds_sum",
 		Help: "Request duration, ms",
 	}, []string{"method", "uri", "status"})
+	CalculationsReportDownloads = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "dealer_portal_download_prm_reports",
+		Help: "Current number",
+	}, []string{"result"})
 )
 
 // IncRequestCount
@@ -28,4 +32,9 @@ func IncRequestCount(r *http.Request, lrw *LoggingResponseWriter) {
 func SetRequestDuration(r *http.Request, lrw *LoggingResponseWriter, startTime int) {
 	durationTime := float64((time.Now().Nanosecond() - startTime) % 1000)
 	RequestDuration.WithLabelValues(r.Method, r.RequestURI, strconv.Itoa(lrw.StatusCode)).Set(durationTime)
+}
+
+// IncCalculationsReportDownloads
+func IncCalculationsReportDownloads(result string) {
+	CalculationsReportDownloads.WithLabelValues(result).Observe(1)
 }
