@@ -19,15 +19,15 @@ var (
 	}, []string{"method", "uri", "status"})
 	CalculationsDocumentDownloads = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "dealer_portal_download_prm_reports",
-		Help: "Скачивание отчетов PRM.",
+		Help: "DealerPortal.DownloadPrmReports",
 	}, []string{"UserDownloadResult"}) // SUCCESS, FAILED
 	AuthSignIn = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "dealer_portal_authorizations",
-		Help: "Авторизация на портале.",
+		Help: "DealerPortal.authrizations",
 	}, []string{"result"}) // 200 или 401
 	RequestsRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "dealer_portal_requests_status",
-		Help: "Создание и возвращение заявки.",
+		Help: "DealerPortal.RequestsStatus",
 	}, []string{"UserDownloadResult"}) // DP_to_HPSM_OK, DP_to_HPSM_ERROR, HPSM_to_DP_OK, HPSM_to_DP_ERROR
 )
 
