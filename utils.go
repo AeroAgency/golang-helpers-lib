@@ -78,7 +78,7 @@ func GetDateTimeTsOrZero(date string) int64 {
 }
 
 // Возвращает timestamp или 0 для переданной даты в формате "dd.mm.yyyy"
-func getDateTsOrZero(date string) int64 {
+func GetDateTsOrZero(date string) int64 {
 	dateTrim := strings.TrimSpace(date)
 	if len(dateTrim) > 0 {
 		return GetDateTimeTs(dateTrim)
