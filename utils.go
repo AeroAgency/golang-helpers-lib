@@ -3,6 +3,7 @@ package helpers
 import (
 	uuid "github.com/satori/go.uuid"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -65,4 +66,22 @@ func GetDateWithTimeTs(date string) int64 {
 func GetBoolFromString(value string) bool {
 	intValue, _ := strconv.Atoi(value)
 	return intValue == 1
+}
+
+// Возвращает timestamp или 0 для переданной даты в формате "dd.mm.yyyy hh:mm:ss"
+func GetDateTimeTsOrZero(date string) int64 {
+	dateTrim := strings.TrimSpace(date)
+	if len(dateTrim) > 0 {
+		return GetDateWithTimeTs(dateTrim)
+	}
+	return 0
+}
+
+// Возвращает timestamp или 0 для переданной даты в формате "dd.mm.yyyy"
+func getDateTsOrZero(date string) int64 {
+	dateTrim := strings.TrimSpace(date)
+	if len(dateTrim) > 0 {
+		return GetDateTimeTs(dateTrim)
+	}
+	return 0
 }
