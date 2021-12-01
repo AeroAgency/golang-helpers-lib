@@ -15,10 +15,11 @@ type Pages struct {
 }
 
 type Entities struct {
-	News         []string `json:"news"`
-	Promo        []string `json:"promo"`
-	Documents    []string `json:"documents"`
-	Calculations []string `json:"calculations"`
-	Reports      []string `json:"reports"`
-	Requests     []string `json:"requests"`
+	News          []string `json:"news"`
+	Promo         []string `json:"promo"`
+	Documents     []string `json:"documents"`
+	Calculations  []string `json:"calculations"`
+	Reports       []string `json:"reports"`
+	Requests      []string `json:"requests"`
+	Subscriptions []string `json:"subscriptions"`
 }
