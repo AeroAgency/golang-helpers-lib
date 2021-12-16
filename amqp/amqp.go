@@ -70,6 +70,7 @@ type Config struct {
 	Arguments     rabbitLib.Table // Указатель на дополнительные параметры очереди
 	ContentType   string
 	VirtualHost   string
+	Properties    map[string]interface{}
 }
 
 // NewClient создает экземпляр структуры с требуемыми параметрами
@@ -153,7 +154,10 @@ func (client *Client) connect() error {
 // Dial инициализирует подключение
 func (client *Client) Dial() error {
 	client.logger.Info().Dict("connecting to rabbitMQ", zerolog.Dict().Str("addr", fmt.Sprintf("%s:%d", client.config.Host, client.config.Port))).Str("queue", client.config.Queue).Msg("")
-	conn, err := rabbitLib.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d/%s", client.config.UserName, client.config.Password, client.config.Host, client.config.Port, client.config.VirtualHost))
+
+	url := fmt.Sprintf("amqp://%s:%s@%s:%d/%s", client.config.UserName, client.config.Password, client.config.Host, client.config.Port, client.config.VirtualHost)
+	config := rabbitLib.Config{Properties: client.config.Properties}
+	conn, err := rabbitLib.DialConfig(url, config)
 
 	if err != nil {
 		client.logger.Error().Dict("connection to rabbit", zerolog.Dict().Str("addr", fmt.Sprintf("amqp://%s:%s@%s:%d/%s", client.config.UserName, client.config.Password, client.config.Host, client.config.Port, client.config.VirtualHost))).Err(err).Msg("")
@@ -203,7 +207,7 @@ func (client *Client) OpenChannel() *Client {
 	if client.connection != nil {
 		channel, err := client.connection.Channel()
 		if client.config.PrefetchCount > 0 && channel != nil {
-			err := channel.Qos(client.config.PrefetchCount, 0, true)
+			err := channel.Qos(client.config.PrefetchCount, 0, false)
 			if err != nil {
 				client.logger.Error().Dict("set prefetchCount", zerolog.Dict().Str("addr", fmt.Sprintf("%s:%d", client.config.Host, client.config.Port)).Err(err)).Msg("")
 			}
