@@ -124,7 +124,6 @@ func (client *Client) connectLoop() {
 			client.logger.Error().Dict("connection to rabbitMQ failed. Retrying in 1 sec... ", zerolog.Dict().Err(err)).Msg("")
 			time.Sleep(1 * time.Second)
 		} else {
-			client.logger.Info().Dict("connection to rabbitMQ successful", zerolog.Dict().Str("addr", fmt.Sprintf("%s:%d", client.config.Host, client.config.Port))).Msg("")
 			go client.reConnector()
 			client.reConsume()
 			return
