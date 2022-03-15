@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/runtime/protoiface"
+	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -95,6 +97,13 @@ func (m *Middleware) MiddlewaresHandler(h http.Handler) http.Handler {
 // Logger -
 func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var data interface{}
+		if r.Method != http.MethodGet {
+			bodyBytes, _ := ioutil.ReadAll(r.Body)
+			_ = r.Body.Close() //  must close
+			r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+			_ = json.Unmarshal(bodyBytes, &data)
+		}
 		exceptions := getLogExceptions()
 		var exception bool
 		lrw := NewLoggingResponseWriter(w)
@@ -118,6 +127,7 @@ func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 					zap.Any("message", map[string]interface{}{
 						"return-code": lrw.StatusCode,
 						"http-method": r.Method,
+						"body":        data,
 						"request-headers": map[string]interface{}{
 							"Content-Type":   r.Header.Get("Content-Type"),
 							"Content-Length": r.Header.Get("Content-Length"),
@@ -129,7 +139,6 @@ func (m *Middleware) LoggerMiddleware(h http.Handler) http.Handler {
 							"x-ps-sso-token": r.Header.Get("Access-Token"),
 						},
 					}),
-
 					zap.String("X-FORWARDED-FOR", r.Header.Get("X-FORWARDED-FOR")),
 					zap.String("Remote Addr", r.RemoteAddr),
 					zap.String("Proto", r.Proto),
