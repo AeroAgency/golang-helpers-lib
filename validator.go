@@ -41,7 +41,7 @@ func init() {
 	})
 }
 
-// Валидация объекта
+// ValidateProto Валидация объекта
 func (validator Validator) ValidateProto(inputStruct interface{}, rules map[string][]string) error {
 	opts := govalidator.Options{
 		Data:  inputStruct,
@@ -56,7 +56,7 @@ func (validator Validator) ValidateProto(inputStruct interface{}, rules map[stri
 	return nil
 }
 
-// Валидация объекта c возможностью передачи настраиваимых сообщений
+// ValidateProtoWithCustomMessages Валидация объекта c возможностью передачи настраиваимых сообщений
 func (validator Validator) ValidateProtoWithCustomMessages(inputStruct interface{}, rules map[string][]string, messages map[string][]string) error {
 	opts := govalidator.Options{
 		Data:     inputStruct,
@@ -69,6 +69,27 @@ func (validator Validator) ValidateProtoWithCustomMessages(inputStruct interface
 		for k := range e {
 			return errors.New(e.Get(k))
 		}
+	}
+	return nil
+}
+
+// ValidateStruct Общий метод для проверки корректности структуры
+func ValidateStruct(data interface{}, rules map[string][]string, messages map[string][]string) error {
+	opts := govalidator.Options{
+		Data:            data,
+		Rules:           rules,    // rules map
+		Messages:        messages, // custom message map (Optional)
+		RequiredDefault: true,     // all the field to be pass the rules
+	}
+	v := govalidator.New(opts)
+	validationResult := v.ValidateStruct()
+	var firstErrorMsg string
+	if len(validationResult) > 0 {
+		for _, item := range validationResult {
+			firstErrorMsg = item[0]
+			break
+		}
+		return fmt.Errorf(firstErrorMsg)
 	}
 	return nil
 }
