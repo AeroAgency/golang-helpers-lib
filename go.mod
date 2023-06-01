@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.2
+	github.com/go-logr/logr v1.2.4
 	github.com/grpc-ecosystem/grpc-gateway v1.15.0
 	github.com/hashicorp/vault/api v1.0.4
 	github.com/minio/minio-go/v6 v6.0.57
@@ -19,5 +20,4 @@ require (
 	google.golang.org/genproto v0.0.0-20200722002428-88e341933a54
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.24.0
-	github.com/gogo/protobuf v1.3.2
 )
