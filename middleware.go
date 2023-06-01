@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/prometheus/common/log"
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -200,9 +199,7 @@ func (m *Middleware) RestRequestLoggerMiddleware(h http.Handler) http.Handler {
 				}
 			}
 			if err == nil && exception != true {
-				log.Info("REST REQUEST")
 				fmt.Print(string(requestDump))
-
 			}
 		}
 		h.ServeHTTP(w, r)
