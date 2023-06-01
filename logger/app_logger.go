@@ -4,27 +4,25 @@ import (
 	"github.com/go-logr/logr"
 )
 
-var logger logr.Logger
-
-func Init(l logr.Logger) {
-	logger = l
+type AppLogger struct {
+	logger logr.Logger
 }
 
-func l() logr.Logger {
-	return logger
+func (al AppLogger) Init(l logr.Logger) {
+	al.logger = l
 }
 
 // Debug Сообщение отладочного уровня
-func Debug(msg string, keysAndValues ...interface{}) {
-	l().V(1).Info(msg, keysAndValues)
+func (al AppLogger) Debug(msg string, keysAndValues ...interface{}) {
+	al.logger.V(1).Info(msg, keysAndValues)
 }
 
 // Info Сообщение информационного уровня
-func Info(msg string, keysAndValues ...interface{}) {
-	l().Info(msg, keysAndValues)
+func (al AppLogger) Info(msg string, keysAndValues ...interface{}) {
+	al.logger.Info(msg, keysAndValues)
 }
 
 // Error Сообщение об ошибке
-func Error(err error, msg string, keysAndValues ...interface{}) {
-	l().Error(err, msg, keysAndValues)
+func (al AppLogger) Error(err error, msg string, keysAndValues ...interface{}) {
+	al.logger.Error(err, msg, keysAndValues)
 }
