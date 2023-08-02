@@ -38,19 +38,19 @@ func Logger() gin.HandlerFunc {
 				for k, v := range c.Request.URL.Query() {
 					requestParams.Strs(k, v)
 				}
-
-				log.Info().Dict("message", zerolog.Dict().
+				log.Info().
 					Int("return-code", c.Writer.Status()).
-					Str("http-method", c.Request.Method).
-					Dict("request-headers", zerolog.Dict().
-						Str(contentType, c.Request.Header.Get(contentType)).
-						Str(userAgent, c.Request.Header.Get(userAgent)).
-						Str(accept, c.Request.Header.Get(accept)),
-					).
-					Str("Path", c.Request.URL.Path).
-					Dur("Latency", time.Since(t1)).
-					Dict("request-params", requestParams),
-				).Msg("")
+					Dict("message", zerolog.Dict().
+						Str("http-method", c.Request.Method).
+						Dict("request-headers", zerolog.Dict().
+							Str(contentType, c.Request.Header.Get(contentType)).
+							Str(userAgent, c.Request.Header.Get(userAgent)).
+							Str(accept, c.Request.Header.Get(accept)),
+						).
+						Str("Path", c.Request.URL.Path).
+						Dur("Latency", time.Since(t1)).
+						Dict("request-params", requestParams),
+					).Msg("")
 			}
 			exception = false
 		}()
