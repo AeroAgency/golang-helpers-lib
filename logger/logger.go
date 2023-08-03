@@ -40,6 +40,7 @@ func Logger() gin.HandlerFunc {
 				}
 				log.Info().
 					Int("return-code", c.Writer.Status()).
+					Str("X-Trace-Id", c.Writer.Header().Get("X-Trace-Id")).
 					Dict("message", zerolog.Dict().
 						Str("http-method", c.Request.Method).
 						Dict("request-headers", zerolog.Dict().
