@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	uuid "github.com/satori/go.uuid"
 	"strconv"
 	"strings"
@@ -84,4 +85,17 @@ func GetDateTsOrZero(date string) int64 {
 		return GetDateTimeTs(dateTrim)
 	}
 	return 0
+}
+
+// Сериализует одну структуру в другу
+func Serialize(in any, out any) error {
+	bs, err := json.Marshal(in)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(bs, out)
+	if err != nil {
+		return err
+	}
+	return nil
 }
