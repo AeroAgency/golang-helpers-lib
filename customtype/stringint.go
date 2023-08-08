@@ -1,4 +1,4 @@
-package _type
+package customtype
 
 import (
 	"encoding/json"
