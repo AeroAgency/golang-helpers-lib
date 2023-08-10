@@ -37,26 +37,29 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 }
 
 // HttpMiddleWare -
-func HttpMiddleWare(logResponses bool) gin.HandlerFunc {
+func HttpMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		methodId := fmt.Sprintf("handler %s:%s", c.Request.Method, c.FullPath())
 		tracer := tracerAdapter.NewTracer(methodId)
 		defer tracer.Close()
 		t1 := time.Now()
-		defer func() {
+		var requestBody string
+		if c.Request.Method == http.MethodPost {
+			buf, _ := io.ReadAll(c.Request.Body)
+			rdr1 := io.NopCloser(bytes.NewBuffer(buf))
+			rdr2 := io.NopCloser(bytes.NewBuffer(buf)) //We have to create a new Buffer, because rdr1 will be read.
+			r, _ := io.ReadAll(rdr1)
+			requestBody = string(r)
+			tracer.LogData("[Request body]", requestBody)
+			c.Request.Body = rdr2
+		}
+		defer func(requestBody string) {
 			for i := range exceptions {
 				if strings.HasPrefix(c.Request.Header.Get(userAgent), exceptions[i]) {
 					exception = true
 				}
 			}
 			if !exception {
-				if c.Request.Method == http.MethodPost {
-					buf, _ := io.ReadAll(c.Request.Body)
-					rdr1 := io.NopCloser(bytes.NewBuffer(buf))
-					rdr2 := io.NopCloser(bytes.NewBuffer(buf)) //We have to create a new Buffer, because rdr1 will be read.
-					tracer.LogData("[Request body]", rdr1)
-					c.Request.Body = rdr2
-				}
 				requestParams := zerolog.Dict()
 				allQueryParams := c.Request.URL.Query()
 				for k, v := range allQueryParams {
@@ -69,15 +72,8 @@ func HttpMiddleWare(logResponses bool) gin.HandlerFunc {
 					headerVal := strings.Join(values, ", ")
 					tracer.Log(fmt.Sprintf("Header [%s]", k), headerVal)
 				}
-
-				var responseBody string
-				if logResponses {
-					blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
-					c.Writer = blw
-					responseBody = blw.body.String()
-				}
-
 				log.Info().
+					Str("log-type", "request").
 					Int("return-code", c.Writer.Status()).
 					Str("X-Trace-Id", c.Writer.Header().Get("X-Trace-Id")).
 					Dict("message", zerolog.Dict().
@@ -85,12 +81,35 @@ func HttpMiddleWare(logResponses bool) gin.HandlerFunc {
 						Str("Path", c.FullPath()).
 						Dur("Latency", time.Since(t1)).
 						Dict("request-params", requestParams).
-						Str("response-body", responseBody),
+						Str("request-body", requestBody),
 					).Msg("")
 			}
 			exception = false
-		}()
+		}(requestBody)
 		c.Set("tracer", tracer)
 		c.Next()
+	}
+}
+
+func HttpRespLogMiddleWare(logResponses bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if logResponses {
+			blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
+			c.Writer = blw
+			c.Next()
+			tracer, _ := c.MustGet("tracer").(tracerAdapter.TracerInterface)
+			responseBody := blw.body.String()
+			tracer.Log("[Response Body]", responseBody)
+			log.Info().
+				Str("log-type", "response").
+				Int("return-code", c.Writer.Status()).
+				Str("X-Trace-Id", c.Writer.Header().Get("X-Trace-Id")).
+				Dict("message", zerolog.Dict().
+					Str("response-body", responseBody),
+				).Msg("")
+
+		} else {
+			c.Next()
+		}
 	}
 }
