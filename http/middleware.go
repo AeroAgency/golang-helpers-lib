@@ -79,6 +79,7 @@ func HttpMiddleWare() gin.HandlerFunc {
 					Dict("message", zerolog.Dict().
 						Str("http-method", c.Request.Method).
 						Str("Path", c.FullPath()).
+						Str(userAgent, c.Request.Header.Get(userAgent)).
 						Dur("Latency", time.Since(t1)).
 						Dict("request-params", requestParams).
 						Str("request-body", requestBody),
