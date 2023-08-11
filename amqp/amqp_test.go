@@ -49,7 +49,7 @@ var tempCounter int
 func TestClient_NewConsumer(t *testing.T) {
 	client := NewClient(Config{}, zerolog.Logger{})
 
-	consumer := client.NewConsumer(&MockHandle{})
+	consumer := client.NewConsumer(&MockHandle{}, "")
 	if reflect.TypeOf(consumer).String() != "*amqp.Consumer" {
 		t.Fatalf("the return result is of type '%s' expected '*amqp.Consumer'", reflect.TypeOf(consumer).String())
 	}
@@ -57,7 +57,7 @@ func TestClient_NewConsumer(t *testing.T) {
 
 func TestConsumer_IsInit(t *testing.T) {
 	client := NewClient(Config{}, zerolog.Logger{})
-	consumer := client.NewConsumer(&MockHandle{})
+	consumer := client.NewConsumer(&MockHandle{}, "")
 
 	consumer.SetIsInit(true)
 	if !consumer.isInit {
@@ -85,7 +85,7 @@ func TestClient_SilenceMode(t *testing.T) {
 
 func TestClient_SetMaintain(t *testing.T) {
 	client := NewClient(Config{}, zerolog.Logger{})
-	consumer := client.NewConsumer(&MockHandle{})
+	consumer := client.NewConsumer(&MockHandle{}, "")
 
 	consumer.SetMaintain(true)
 	if !consumer.IsMaintain {
@@ -100,7 +100,7 @@ func TestClient_SetMaintain(t *testing.T) {
 
 func TestClient_SetDelay(t *testing.T) {
 	client := NewClient(Config{}, zerolog.Logger{})
-	consumer := client.NewConsumer(&MockHandle{})
+	consumer := client.NewConsumer(&MockHandle{}, "")
 
 	consumer.SetDelay(time.Second)
 	if consumer.delay != time.Second {
@@ -116,7 +116,7 @@ func TestClient_GetConsumers(t *testing.T) {
 		t.Fatalf("consumer cards have not been added, the list is not empty")
 	}
 
-	client.NewConsumer(&MockHandle{})
+	client.NewConsumer(&MockHandle{}, "")
 
 	consumers = client.GetConsumers()
 	if len(consumers) != 1 {
@@ -126,7 +126,7 @@ func TestClient_GetConsumers(t *testing.T) {
 
 func TestClient_ClearConsumers(t *testing.T) {
 	client := NewClient(Config{}, zerolog.Logger{})
-	client.NewConsumer(&MockHandle{})
+	client.NewConsumer(&MockHandle{}, "")
 	client.ClearConsumers()
 
 	consumers := client.GetConsumers()
@@ -174,7 +174,7 @@ func TestClient_PublishExchange(t *testing.T) {
 func TestConsumer_Init(t *testing.T) {
 	client := NewClient(Config{}, zerolog.Logger{})
 
-	consumer := client.NewConsumer(&MockHandle{})
+	consumer := client.NewConsumer(&MockHandle{}, "")
 	if reflect.TypeOf(consumer).String() != "*amqp.Consumer" {
 		t.Fatalf("the return result is of type '%s' expected '*amqp.Consumer'", reflect.TypeOf(consumer).String())
 	}
@@ -189,6 +189,6 @@ func TestClient_QueueBind(t *testing.T) {
 
 func TestClient_ReConsume(t *testing.T) {
 	client := NewClient(Config{}, zerolog.Logger{})
-	client.NewConsumer(&MockHandle{})
+	client.NewConsumer(&MockHandle{}, "")
 	client.reConsume()
 }
