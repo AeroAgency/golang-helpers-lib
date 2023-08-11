@@ -5,8 +5,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var PullMode bool
-
 type Metric struct {
 	Name      string
 	Collector prometheus.Collector
