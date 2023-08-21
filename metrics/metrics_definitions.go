@@ -27,7 +27,7 @@ var (
 			Subsystem: "http",
 			Name:      "request_execution_time_seconds",
 			Help:      "Time of http request execution",
-			Buckets:   []float64{0.1, 0.3, 0.5, 1, 2, 5, 10, 20, 60},
+			Buckets:   []float64{0.1, 0.3, 0.5, 0.6, 1, 2, 5, 10, 20, 60},
 		}, []string{"endpoint_uri"}),
 	}
 )
@@ -55,7 +55,7 @@ var (
 			Subsystem: "storage",
 			Name:      "request_execution_time_seconds",
 			Help:      "Time of storage request execution",
-			Buckets:   []float64{0.1, 0.3, 0.5, 1, 2, 5, 10, 20, 60},
+			Buckets:   []float64{0.1, 0.3, 0.5, 0.6, 1, 2, 5, 10, 20, 60},
 		}, []string{"type"}),
 	}
 )
